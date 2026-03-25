@@ -1,44 +1,70 @@
 # Test Plan v1
 
-## Objetivo
+## Goal
 
-Verificar funcionalidad, robustez y desempeno base del sistema inalambrico v1.
+Verificar funcionalidad, robustez y desempeno para llevar el protocolo a pruebas de campo con riesgos controlados.
 
-## 1. Pruebas unitarias
+## Test pipeline
 
-- CRC16: vectores conocidos.
-- Codec de tramas: serialize/deserialize y casos invalidos.
-- Ring buffer: overflow controlado y orden FIFO.
-- Time sync: convergencia de offset y drift sintetico.
+```mermaid
+flowchart LR
+  A[Tests unitarios] --> B[Tests fuzz de protocolo]
+  B --> C[Integracion de banco 2 nodos]
+  C --> D[HIL soak 8h]
+  D --> E[Campo LOS 0.2/1/2 km]
+  E --> F[Puerta de release]
+  F -->|Pasa| G[Etiquetar candidato v1]
+  F -->|Falla| H[Ciclo causa raiz y correccion]
+  H --> C
+```
 
-## 2. Pruebas de integracion (bench)
+## 1) Unit tests
 
-- Join de nodo y asignacion de ID.
-- Inicio/parada de stream.
-- ACK/NACK y retransmision.
-- Recuperacion tras perdida temporal de enlace.
+- CRC16: vectores conocidos y mutacion de bytes.
+- Codec: serialize/deserialize, truncado, payload_len invalido.
+- Ring buffer: overflow, underflow, wrap-around.
+- Time sync: convergencia de offset y estabilidad con drift sintetico.
 
-## 3. Pruebas de estabilidad
+## 2) Protocol robustness tests
 
-- Corrida de 8 horas con 2 nodos minimos.
-- Registro de:
+- Fuzz parser: bytes aleatorios, headers corruptos, longitudes extremas.
+- Sequence window: duplicados, out-of-order, gaps.
+- Retry policy: NACK repetidos, timeout y max retries.
+- Recovery behavior: reconexion y vaciado de buffer local.
+
+## 3) Bench integration (lab)
+
+- Join de nodo y asignacion de ID/slot.
+- Inicio/parada de stream por comando.
+- ACK/NACK en condiciones nominales.
+- Emulacion de perdida RF con atenuacion controlada.
+
+## 4) Stability soak
+
+- Corrida minima: 8 horas con 2 nodos.
+- Corrida objetivo: 24 horas para pre-campo.
+- Registrar:
   - dropped frames
-  - retransmisiones
+  - retransmisiones por nodo
   - drift temporal
-  - uso de buffer
+  - ocupacion de buffer
+  - resets por watchdog/brownout
 
-## 4. Pruebas de campo LOS
+## 5) Field tests LOS
 
 - Distancias: 0.2 km, 1 km, 2 km.
-- KPIs:
-  - PER (packet error rate)
-  - RSSI por nodo
+- Escenarios: linea de vista limpia y perturbada.
+- KPI obligatorios:
+  - PER
+  - RSSI
   - latencia extremo a extremo
   - continuidad de stream
+  - error budget de sincronizacion
 
-## 5. Criterios de aceptacion v1
+## 6) Release gate criteria
 
-- Parser sin fallos con tramas validas e invalidas controladas.
+- Parser robusto sin crash ante entradas invalidas.
 - Reconexion automatica tras perdida de enlace.
-- Sincronizacion dentro de objetivo operativo definido.
-- Registro claro de metricas y eventos de error.
+- Sincronizacion dentro de objetivo operativo.
+- Sin perdida silenciosa (drops siempre reportados).
+- Bitacora de pruebas con evidencia reproducible.

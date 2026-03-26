@@ -1,59 +1,40 @@
-# Arduino Integration Guide
+# Arduino Integration Guide (alineado al enfoque actual)
 
-## ¿Esto sirve como libreria para dos placas Arduino?
+## Proposito
 
-Si. Ahora tienes una libreria Arduino lista en:
+Usar la libreria Arduino como entorno de aprendizaje/prototipo, manteniendo compatibilidad conceptual con el enfoque vigente del proyecto.
 
-- [arduino/ADQProtocol](arduino/ADQProtocol)
+## Libreria disponible
+
+Ruta:
+
+- arduino/ADQProtocol
 
 Incluye:
 
-- empaquetado Arduino (`library.properties`)
-- codec de tramas
+- codec
 - CRC16
 - ring buffer
-- helper de sincronizacion temporal
-- ejemplos de nodo y base
-
-## Instalacion en Arduino IDE
-
-1. Copia la carpeta [arduino/ADQProtocol](arduino/ADQProtocol) dentro de tu carpeta de librerias de Arduino.
-   Ejemplo en Windows: `Documentos/Arduino/libraries/ADQProtocol`
-2. Reinicia Arduino IDE.
-3. Verifica en menu de ejemplos: `File > Examples > ADQProtocol`.
+- sincronizacion temporal basica
+- ejemplos de nodo/base
 
 ## Flujo minimo con dos placas
 
-1. Placa A (nodo): cargar ejemplo [arduino/ADQProtocol/examples/NodeTxDemo/NodeTxDemo.ino](arduino/ADQProtocol/examples/NodeTxDemo/NodeTxDemo.ino)
-2. Placa B (base): cargar ejemplo [arduino/ADQProtocol/examples/BaseRxDemo/BaseRxDemo.ino](arduino/ADQProtocol/examples/BaseRxDemo/BaseRxDemo.ino)
-3. Reemplazar transporte Serial por tu modulo RF real (LoRa, FSK, etc.).
+1. Nodo: arduino/ADQProtocol/examples/NodeTxDemo/NodeTxDemo.ino
+2. Base: arduino/ADQProtocol/examples/BaseRxDemo/BaseRxDemo.ino
+3. Validar encode/decode y secuencia de mensajes.
 
-## Como implementarlo en tu hardware real
+## Importante
 
-### En nodo
+La capa RF final del proyecto es nRF52840 2.4 GHz ESB-like. Arduino aqui se usa para pruebas didacticas y validacion de logica, no como referencia final de stack RF.
 
-- Leer ADC strain gauge.
-- Armar payload en `adq_frame_t`.
-- Codificar con `ADQProtocol::encode(...)`.
-- Enviar bytes por radio.
-- Esperar ACK y reintentar si aplica.
+## Recomendaciones
 
-### En basestation
+- Validar primero framing + CRC + secuencia por serial/loopback.
+- Integrar despues ACK/NACK y politicas de retry.
+- Mantener compatibilidad de campos con docs/protocol/protocol-v1.md.
 
-- Recibir bytes desde radio.
-- Decodificar con `ADQProtocol::decode(...)`.
-- Validar `msg_type`, `seq`, `timestamp`.
-- Emitir ACK/NACK al nodo.
-- Publicar por USB al PC.
+## Limites de esta guia
 
-## Recomendacion practica
-
-Para una primera prueba estable con Arduino:
-
-- usa dos placas con suficiente RAM (ESP32, STM32, RP2040, o AVR Mega)
-- prueba primero punto a punto a corta distancia
-- luego activa ACK/reintentos y finalmente sincronizacion por beacon
-
-## Nota
-
-El ejemplo BaseRxDemo es intencionalmente simple y no incluye un parser de stream robusto. En la siguiente iteracion te puedo implementar un parser por maquina de estados para tramas fragmentadas.
+- No define backend RF final.
+- No reemplaza las pruebas de campo del firmware principal.

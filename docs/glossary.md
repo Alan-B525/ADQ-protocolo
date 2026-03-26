@@ -1,40 +1,29 @@
 # Glossary
 
-Glosario corto para estudiantes y personas no tecnicas.
+Glosario operativo del enfoque vigente ADQ v1.
 
-## Siglas y terminos clave
+## Terminos clave
 
-- Node: dispositivo remoto que mide sensores y envia datos.
-- Base Station: dispositivo central que coordina la red y recibe datos.
-- Host PC: computadora que configura, muestra y guarda datos.
-- Strain Gauge: sensor que mide deformacion mecanica.
-- RF: radio frequency.
-- LOS: line of sight (linea de vista directa).
-- MCU: microcontroller unit.
-- ADC: analog to digital converter.
-- TDMA: time division multiple access (cada nodo transmite en su turno).
-- Slot: ventana de tiempo asignada para transmitir.
-- Beacon: mensaje periodico de referencia temporal.
-- Timestamp: marca de tiempo de cuando ocurrio una medicion.
+- Nodo: dispositivo remoto que adquiere datos y transmite.
+- Base: dispositivo central que sincroniza, agenda slots y valida tramas.
+- Host: PC que recibe, guarda y analiza resultados.
+- nRF52840: SoC objetivo de radio para v1.
+- ESB-like: enfoque propietario ligero de enlace/MAC en 2.4 GHz.
+- Beacon: mensaje periodico de sincronizacion y control de slots.
+- Slot: ventana temporal asignada para transmitir.
+- Guard time: margen de seguridad temporal dentro del slot.
 - ACK: confirmacion de recepcion correcta.
-- NACK: confirmacion de recepcion incorrecta (pide reenvio).
-- Retry: reintento de envio.
-- Recovery mode: modo de recuperacion tras fallos de enlace o sincronizacion.
-- CRC: cyclic redundancy check, usado para detectar errores de datos.
-- Payload: contenido util de una trama.
-- Frame (trama): paquete completo con header, payload y CRC.
-- Seq (sequence): numero de orden de tramas.
-- Drift: desviacion del reloj local respecto a la referencia.
-- Buffer: memoria temporal para guardar datos antes de confirmar envio.
-- Watchdog: mecanismo que reinicia el sistema si se bloquea.
-- Brownout: caida de voltaje que puede causar errores o reset.
-- Telemetry: informacion de estado del sistema (RSSI, retries, fallos, etc.).
-- TLV: type-length-value, formato flexible para extender mensajes.
-- Secure boot: arranque seguro validando firmware.
-- Firmware signing: firma digital de firmware para evitar codigo no autorizado.
+- NACK: rechazo con motivo para disparar reintento.
+- Retry budget: cantidad maxima de reintentos permitidos.
+- Recovery: estado del nodo para recobrar sincronizacion/estabilidad.
+- Seq: contador de secuencia de tramas.
+- CRC16: verificacion de integridad de trama.
+- Fragmentacion: division de una trama grande en fragmentos RF.
+- Reensamble: reconstruccion de la trama original desde fragmentos.
+- Parser FSM: maquina de estados que consume stream y reconstruye tramas.
+- PER: packet error rate.
+- LOS: line of sight.
 
-## Mini guia de lectura de documentos
+## Regla rapida
 
-- Si ves una palabra en ingles, revisa este glosario primero.
-- Si ves una sigla, busca su definicion aqui antes de seguir.
-- Si un diagrama parece complejo, empieza por identificar quien envia y quien recibe.
+Si un termino no aparece aqui, agregarlo junto con su definicion corta en el mismo cambio donde se introduce.

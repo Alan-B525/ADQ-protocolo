@@ -1,63 +1,23 @@
-# Protocol Name Proposals
+# Protocol Name and Version Policy
 
-## Naming criteria
+## Decision
 
-- Debe comunicar fiabilidad y sincronizacion.
-- Debe ser corto para firmware/docs/CLI.
-- Debe ser pronunciable en espanol e ingles.
-- Debe evitar conflicto evidente con marcas existentes.
+El nombre de trabajo y de entrega permanece ADQ-protocolo.
 
-```mermaid
-flowchart LR
-  A[Claridad] --> D[Puntaje del nombre]
-  B[Significado tecnico] --> D
-  C[Memorabilidad] --> D
-  E[Sin conflicto legal] --> D
-```
+No se mantienen propuestas alternativas como linea activa.
 
-## Top candidate names
+## Versionado de protocolo
 
-### 1) SARA
+- Version activa de especificacion: ADQ v1.
+- Campo de compatibilidad: proto_version en header.
+- Cambios incompatibles: requieren incrementar version y documentar migracion.
 
-- Expansion: Synchronized Acquisition Robust Architecture.
-- Why good: corto, facil de recordar, comunica sincronizacion y robustez.
-- Suggested protocol id: `sara-v1`.
+## Convenciones
 
-### 2) ARES
+- Prefijo de codigo C: adq_
+- Identificador documental: ADQ v1
+- Mensajes: ADQ_MSG_*
 
-- Expansion: Acquisition Resilient Engineering System.
-- Why good: tono fuerte de ingenieria, ideal para version industrial.
-- Suggested protocol id: `ares-v1`.
+## Regla de comunicacion
 
-### 3) STRIDE
-
-- Expansion: Synchronized Telemetry with Reliable Integrated Data Exchange.
-- Why good: sugiere avance continuo y telemetria confiable.
-- Suggested protocol id: `stride-v1`.
-
-### 4) NEXUS-SG
-
-- Expansion: Node Exchange Unified Sync for Strain Gauge.
-- Why good: explicito para caso strain gauge y red nodo-base.
-- Suggested protocol id: `nexus-sg-v1`.
-
-### 5) RIFT
-
-- Expansion: Reliable Industrial Field Telemetry.
-- Why good: orientado a campo e industria.
-- Suggested protocol id: `rift-v1`.
-
-## Recommendation
-
-Si quieres un nombre equilibrado entre tecnico y facil de branding, recomiendo:
-
-1. `SARA` (mejor equilibrio general)
-2. `ARES` (perfil industrial fuerte)
-3. `NEXUS-SG` (maxima especificidad de dominio)
-
-## Naming style guide
-
-- Nombre comercial: `SARA Protocol`.
-- Identificador tecnico: `sara-v1`.
-- Prefijo de mensajes en docs: `SARA_MSG_*`.
-- Prefijo de libreria: `sara_` o `adq_` si mantienes continuidad del codigo actual.
+Toda comunicacion tecnica y operativa debe usar el nombre ADQ-protocolo para evitar ambiguedad.

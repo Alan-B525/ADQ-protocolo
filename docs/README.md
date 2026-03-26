@@ -1,29 +1,27 @@
 # Documentacion Del Proyecto
 
-Esta carpeta esta escrita para dos perfiles:
+Este set de documentos describe exclusivamente el enfoque vigente del proyecto.
 
-- Personas nuevas (estudiantes o no tecnicas) que quieren entender que hace el sistema.
-- Personas tecnicas que quieren implementarlo o mejorarlo.
+No se mantiene ya la direccion anterior. Si encuentras alguna referencia vieja, debe considerarse no valida.
 
-## Ruta rapida para aprender
+## Ruta rapida
 
-1. Lee [glossary.md](glossary.md) para entender siglas y terminos.
-2. Lee [architecture/system-architecture-v1.md](architecture/system-architecture-v1.md) para ver el panorama general.
-3. Lee [protocol/protocol-v0.1.md](protocol/protocol-v0.1.md) para entender como viajan los datos.
-4. Revisa [protocol/protocol-educational-diagrams.md](protocol/protocol-educational-diagrams.md) para estudiar los flujos.
-5. Termina con [testing/test-plan-v1.md](testing/test-plan-v1.md) para ver como se valida.
+1. glossary.md
+2. architecture/system-architecture-v1.md
+3. protocol/protocol-v1.md
+4. protocol/protocol-educational-diagrams.md
+5. testing/test-plan-v1.md
+6. implementation-roadmap-v1.md
 
-## Si quieres implementar
+## Documentos clave de ejecucion
 
-- Integracion Arduino: [arduino-integration.md](arduino-integration.md)
-- Roadmap tecnico: [implementation-roadmap-v1.md](implementation-roadmap-v1.md)
-- Riesgos y brechas: [engineering-readiness-review.md](engineering-readiness-review.md)
-- Decisiones de arquitectura: [adr/ADR-0001-radio-and-mac.md](adr/ADR-0001-radio-and-mac.md)
+- ADR de direccion tecnica: adr/ADR-0001-radio-and-mac.md
+- Estado operativo unico: ../PROJECT_STATUS.md
+- Integracion Arduino (prototipo): arduino-integration.md
+- Riesgos y readiness: engineering-readiness-review.md
 
-## Si quieres nombrar o comunicar el protocolo
+## Regla editorial
 
-- Propuestas de nombre: [protocol/protocol-name-proposals.md](protocol/protocol-name-proposals.md)
-
-## Referencias
-
-- Fuentes de investigacion: [research-sources.md](research-sources.md)
+- Este proyecto usa como baseline: nRF52840 + 2.4 GHz ESB-like + 100 m LOS.
+- Documentar solo estado real implementado o backlog inmediato.
+- No mantener ramas narrativas historicas sin utilidad operativa.

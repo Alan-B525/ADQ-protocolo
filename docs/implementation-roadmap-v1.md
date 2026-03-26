@@ -1,46 +1,46 @@
 # Implementation Roadmap v1
 
-## Sprint 1
+## Objetivo del roadmap
 
-- Base de repositorio y documentacion tecnica.
-- Librerias comunes: CRC, codec, ring buffer, time sync.
-- App minima de nodo y basestation.
+Alinear todo el trabajo al enfoque vigente: nRF52840 + 2.4 GHz ESB-like + MAC determinista + 100 m LOS.
 
-## Sprint 2
+## Fase A - Baseline de transporte (completada en gran parte)
 
-- HAL de radio real (chip seleccionado).
-- Scheduler de slots TDMA.
-- Telemetria minima de diagnostico.
+- [x] Perfil de enlace 100 m.
+- [x] HAL RF base en loopback.
+- [x] Fragmentacion y reensamble.
+- [x] Parser FSM de stream.
 
-## Sprint 3
+## Fase B - MAC determinista (completada en gran parte)
 
-- Integracion front-end strain gauge real.
-- Pipeline de captura host y export.
-- Pruebas bench y estabilidad.
+- [x] Scheduler de slots por nodo.
+- [x] Beacon payload con parametros de slot.
+- [x] Node slot gating.
+- [x] Gestor de transacciones ACK/NACK con timeout y reintentos.
 
-## Sprint 4
+## Fase C - Integracion RF real nRF52840 (activa)
 
-- Pruebas de campo LOS 0.2/1/2 km.
-- Ajuste de parametros RF y retransmision.
-- Cierre de release v1.
+- [ ] Reemplazar loopback por backend RF real.
+- [ ] Conectar IRQ/eventos de radio al pipeline de tx/rx.
+- [ ] Exponer RSSI y metricas de enlace en tiempo real.
 
-## Sprint 5 (hardening)
+## Fase D - Validacion por etapas (activa)
 
-- Parser de stream con maquina de estados y fuzz testing.
-- Ventana de secuencia y politicas anti-duplicado.
-- Telemetria de salud extendida y codigos de falla normalizados.
-- Prueba de soak de 24 horas con reporte estandar.
+- [ ] Banco: 2 nodos + 1 base en entorno controlado.
+- [ ] Campo corto: 10 m.
+- [ ] Campo medio: 50 m.
+- [ ] Campo objetivo: 100 m.
+- [ ] Cierre de evidencia con PER, latencia y retries.
 
-## Sprint 6 (security + operations)
+## Fase E - Hardening inmediato
 
-- PSK de red, anti-replay por frame counter, auth en join.
-- Firma de firmware y base para secure boot.
-- Runbooks de operacion de campo y troubleshooting.
-- Plantilla de reporte de incidente con export automatizado.
+- [ ] Ventana de secuencia por nodo y anti-duplicados en base.
+- [ ] Taxonomia final de motivos NACK.
+- [ ] Politica de recovery y resync con criterios de entrada/salida.
 
-## Sprint 7 (industrialization)
+## Criterio de salida v1
 
-- DFT/DFM de PCB y plan de test de produccion.
-- FMEA de nodo y basestation.
-- Criterios de aceptacion de fabrica y trazabilidad de lote.
-- Cierre de backlog v1.1 y plan de escalado de nodos.
+- Enlace estable a 100 m LOS.
+- Sin perdida silenciosa.
+- Evidencia reproducible de retry/recovery.
+- Baseline de pruebas unitarias y de campo documentada.

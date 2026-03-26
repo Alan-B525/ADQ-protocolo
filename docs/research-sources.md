@@ -1,24 +1,28 @@
 # Research Sources and Notes
 
-## Referencias tecnicas usadas
+## Referencias tecnicas base
 
 1. LORD MicroStrain Protocols (Wireless Data Packets)
 - URL: https://github.com/LORD-MicroStrain/Protocols/blob/master/Wireless/Data%20Packets.md
-- URL raw: https://raw.githubusercontent.com/LORD-MicroStrain/Protocols/master/Wireless/Data%20Packets.md
-- Uso: estructura de paquetes, descubrimiento de nodos, sincronizacion, diagnostico, rates.
+- Uso: inspiracion de estructura de mensajes y flujo de confiabilidad.
 
-2. Comparativa LXRS vs LXRS+ (resumen publico)
+2. Comparativa LXRS/LXRS+ (material publico)
 - URL: https://www.technimeasure.co.uk/lxrs-lxrs-wireless-protocols/
-- Uso: trade-off alcance vs throughput y principios de operacion lossless/sync.
+- Uso: contexto de trade-offs de sincronizacion y robustez.
 
-3. Contexto general 802.15.4
+3. IEEE 802.15.4 (contexto general)
 - URL: https://en.wikipedia.org/wiki/IEEE_802.15.4
-- Uso: marco general para MAC/PHY de baja potencia.
+- Uso: referencia general de redes inalambricas de baja potencia.
+
+4. Nordic nRF52840 documentacion oficial
+- URL: https://docs.nordicsemi.com/
+- Uso: referencia de radio, timers y perifericos para backend real.
 
 ## Nota de propiedad intelectual
 
-Este proyecto replica principios funcionales de red inalambrica robusta (sincronizacion, ACK/retransmision, buffering), pero no copia implementaciones propietarias de terceros.
+El proyecto implementa una arquitectura propia basada en principios publicos de ingenieria. No replica implementaciones propietarias de terceros.
 
-## Pendiente
+## Politica de mantenimiento de fuentes
 
-Extraer resumen interno de los PDF en `docs/` para trazabilidad completa con requisitos legacy del equipo.
+- Mantener solo fuentes utiles para el enfoque vigente.
+- Eliminar referencias que no aporten al baseline actual (nRF52840 + ESB-like + 100 m).

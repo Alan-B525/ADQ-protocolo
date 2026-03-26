@@ -1,90 +1,47 @@
 # Engineering Readiness Review
 
-## Executive summary
+## Resumen ejecutivo
 
-El proyecto ya tiene una base buena de arquitectura y protocolo. Para llevarlo a nivel top de ingenieria y operacion real continua faltan cuatro bloques: robustez formal de protocolo, seguridad de producto, operacion observables y validacion sistematica de campo.
+El proyecto ya cambio de rumbo y tiene direccion tecnica clara. Se debe cerrar ejecucion, no rediscutir arquitectura base.
 
-## Current maturity snapshot
+Direccion cerrada:
 
-- Architecture baseline: present.
-- Protocol baseline: present.
-- Basic implementation scaffold: present.
-- Hardware-specific integration: pending.
-- Security hardening: pending.
-- Reliability stress evidence: pending.
+- nRF52840
+- 2.4 GHz ESB-like
+- 100 m LOS
+- MAC determinista con ACK/NACK y recovery
 
-## Gap analysis by severity
+## Estado de madurez
 
-### Critical gaps
+- Baseline de protocolo: fuerte.
+- Baseline de MAC determinista: fuerte.
+- Backend RF real: pendiente (principal foco tecnico).
+- Validacion de campo 10/50/100 m: pendiente.
 
-1. Falta parser de stream robusto con maquina de estados.
-2. Falta estrategia formal anti-duplicado y anti-gap por ventana de secuencia.
-3. Falta control de autenticacion y anti-replay.
-4. Falta politica de recuperacion persistente ante reset durante backlog.
+## Riesgos prioritarios
 
-### High gaps
+1. Integracion RF real con temporizacion consistente.
+2. Ajuste de parametros para sostener 100 m sin degradar latencia.
+3. Cierre de politica de secuencia/duplicados en base.
 
-1. Falta observabilidad de campo en tiempo real (health dashboard o export estructurado).
-2. Falta test de soak >24h con reporte estandarizado.
-3. Falta procedimiento de calibracion de front-end strain gauge documentado.
-4. Falta especificacion de budgets: latencia, perdida, deriva, consumo.
+## Mitigaciones en curso
 
-### Medium gaps
+- Parser FSM y fragmentacion ya implementados.
+- Scheduler de slots y slot gating en nodo implementados.
+- Gestor ACK/NACK con timeout/reintento implementado.
 
-1. Falta estrategia OTA firmada para mantenimiento.
-2. Falta FMEA del nodo y basestation.
-3. Falta plan de fabricacion/test de placa (ICT/functional).
+## Gate tecnico recomendado
 
-## Risk matrix
+Antes de declarar v1 listo, exigir:
 
-| Risk | Impact | Likelihood | Mitigation |
-|---|---|---|---|
-| Frame desync in noisy channel | High | Medium | Stateful parser + strict framing + watchdog reset of parser |
-| Data loss during temporary outage | High | Medium | Persistent buffer + replay after reconnect |
-| Node spoofing | High | Medium | PSK auth + frame counters + MAC |
-| Time drift accumulation | Medium | Medium | Periodic beacon sync + drift alarm |
-| Brownout resets | Medium | High | Brownout detection + transactional buffer commit |
+- evidencia de 100 m LOS,
+- KPIs de PER/latencia/retries,
+- recovery verificado en corte temporal,
+- set de pruebas unitarias ejecutable y estable.
 
-## Robustness roadmap
+## Prioridad de trabajo
 
-```mermaid
-flowchart TD
-	A[Endurecimiento del parser de protocolo] --> B[Ventana de secuencia y deduplicacion]
-	B --> C[Formalizacion de retry y recovery]
-	C --> D[Baseline de seguridad auth anti-replay]
-	D --> E[Observabilidad y alertas]
-	E --> F[Evidencia de soak largo y campo]
-```
-
-## Recommended robustness requirements (top project profile)
-
-1. Reliability
-- End-to-end delivery accounting (no silent drops).
-- Configurable retry policy with per-node telemetry.
-- Sequence window and duplicate suppression.
-
-2. Timing
-- Sync quality metric exported continuously.
-- Drift threshold alarms with auto-resync.
-
-3. Security
-- Node identity and network admission control.
-- Frame counter monotonic checks.
-- Signed firmware images and secure boot chain.
-
-4. Operations
-- Structured logs with event codes.
-- Reproducible runbook for field technicians.
-- One-command data export for incident analysis.
-
-5. Quality
-- Gate release only with test evidence pack.
-- Regression suite on every protocol change.
-
-## What to implement next (ordered)
-
-1. Stateful stream parser in base and host.
-2. Sequence window + duplicate filter.
-3. ACK policy with explicit reason taxonomy.
-4. Security v1.1 baseline (auth + anti-replay).
-5. 24h soak campaign and field campaign template.
+1. Backend RF real nRF52840.
+2. Pruebas de banco integradas.
+3. Campana de campo por etapas.
+4. Ajustes finos de secuencia/duplicados y motivo NACK.

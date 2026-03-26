@@ -1,70 +1,69 @@
 # Test Plan v1
 
-## Goal
+## Objetivo
 
-Verificar funcionalidad, robustez y desempeno para llevar el protocolo a pruebas de campo con riesgos controlados.
+Validar de forma objetiva que el nuevo enfoque funciona en 100 m LOS con comportamiento determinista y recuperable.
 
-## Test pipeline
+## Pipeline de validacion
 
 ```mermaid
 flowchart LR
-  A[Tests unitarios] --> B[Tests fuzz de protocolo]
-  B --> C[Integracion de banco 2 nodos]
-  C --> D[HIL soak 8h]
-  D --> E[Campo LOS 0.2/1/2 km]
-  E --> F[Puerta de release]
-  F -->|Pasa| G[Etiquetar candidato v1]
-  F -->|Falla| H[Ciclo causa raiz y correccion]
-  H --> C
+  A[Unit tests] --> B[Bench integrado]
+  B --> C[Prueba 10 m]
+  C --> D[Prueba 50 m]
+  D --> E[Prueba 100 m]
+  E --> F[Gate de salida v1]
 ```
 
 ## 1) Unit tests
 
-- CRC16: vectores conocidos y mutacion de bytes.
-- Codec: serialize/deserialize, truncado, payload_len invalido.
-- Ring buffer: overflow, underflow, wrap-around.
-- Time sync: convergencia de offset y estabilidad con drift sintetico.
+- CRC16
+- Codec
+- Fragmentacion/reensamble
+- Parser FSM de stream
+- Scheduler MAC
+- Slot gating en nodo
+- ACK/NACK + transaction manager
 
-## 2) Protocol robustness tests
+## 2) Bench integrado
 
-- Fuzz parser: bytes aleatorios, headers corruptos, longitudes extremas.
-- Sequence window: duplicados, out-of-order, gaps.
-- Retry policy: NACK repetidos, timeout y max retries.
-- Recovery behavior: reconexion y vaciado de buffer local.
+Escenario minimo:
 
-## 3) Bench integration (lab)
+- 1 base + 2 nodos
+- scheduler activo
+- tx en slots
+- feedback ACK/NACK
 
-- Join de nodo y asignacion de ID/slot.
-- Inicio/parada de stream por comando.
-- ACK/NACK en condiciones nominales.
-- Emulacion de perdida RF con atenuacion controlada.
+Validar:
 
-## 4) Stability soak
+- asignacion de slots
+- no tx fuera de slot
+- retries bajo timeout controlado
+- transicion a recovery cuando se agota presupuesto
 
-- Corrida minima: 8 horas con 2 nodos.
-- Corrida objetivo: 24 horas para pre-campo.
-- Registrar:
-  - dropped frames
-  - retransmisiones por nodo
-  - drift temporal
-  - ocupacion de buffer
-  - resets por watchdog/brownout
+## 3) Campo por etapas
 
-## 5) Field tests LOS
+- Etapa 1: 10 m LOS
+- Etapa 2: 50 m LOS
+- Etapa 3: 100 m LOS
 
-- Distancias: 0.2 km, 1 km, 2 km.
-- Escenarios: linea de vista limpia y perturbada.
-- KPI obligatorios:
-  - PER
-  - RSSI
-  - latencia extremo a extremo
-  - continuidad de stream
-  - error budget de sincronizacion
+Registrar en cada etapa:
 
-## 6) Release gate criteria
+- PER
+- RSSI medio y minimo
+- latencia media/p95
+- retries por frame
+- numero de recoveries
 
-- Parser robusto sin crash ante entradas invalidas.
-- Reconexion automatica tras perdida de enlace.
-- Sincronizacion dentro de objetivo operativo.
-- Sin perdida silenciosa (drops siempre reportados).
-- Bitacora de pruebas con evidencia reproducible.
+## 4) Criterios de aprobacion
+
+- Sin perdida silenciosa.
+- ACK/NACK consistente con secuencia enviada.
+- Recovery funcional ante perdida temporal.
+- PER dentro del umbral acordado para 100 m.
+
+## 5) Evidencia minima por corrida
+
+- Configuracion usada (canal, bitrate, potencia, timeout, max_retries).
+- CSV o log de eventos con node_id y seq.
+- Resumen de KPIs y conclusion.

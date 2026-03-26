@@ -1,101 +1,83 @@
 # ADQ-protocolo
 
-Sistema de adquisicion inalambrica para nodos remotos con sensores strain gauge y una basestation central.
+Sistema de adquisicion inalambrica para nodos remotos con strain gauge y una base central.
 
-**👀 Project Status?** See [PROJECT_STATUS.md](PROJECT_STATUS.md) — **Single source of truth** for what's done, blockers, and what's next.
+Este repositorio ya no sigue el enfoque anterior de largo alcance ni rutas alternativas. La direccion oficial es:
 
-**📊 Update Status:** At end of work day, run `/update-project-status` to automatically update the file.
+- Radio: nRF52840 (2.4 GHz)
+- Enfoque MAC: propietario ESB-like determinista
+- Alcance objetivo v1: hasta 100 m LOS
+- Prioridad: confiabilidad y trazabilidad (no throughput maximo)
 
-## Objetivo de la v1
+Ver estado operativo en PROJECT_STATUS.md.
 
-Construir una primera version funcional inspirada en principios tipo LXRS:
+## Enfoque actual (version vigente)
 
-- Topologia estrella (nodo -> basestation).
-- Sincronizacion temporal por beacon.
-- Fiabilidad por ACK/NACK y retransmision.
-- Buffer local para recuperacion ante cortes de enlace.
-- Telemetria de diagnostico del enlace y del nodo.
+La version vigente se centra en 4 pilares:
+
+1. Sincronizacion por beacon.
+2. Slots deterministas para evitar colisiones.
+3. Entrega confiable por ACK/NACK + retry con presupuesto controlado.
+4. Integridad y observabilidad (CRC, secuencia, metricas de enlace).
+
+## Estado tecnico actual del firmware
+
+Implementado en firmware comun:
+
+- Codec y CRC16
+- Ring buffer
+- Time sync
+- Perfil de enlace 100 m
+- HAL RF base (loopback)
+- Fragmentacion y reensamble
+- Parser FSM de stream
+- Scheduler MAC (beacon + slots)
+- Gestor de transacciones ACK/NACK con timeout y reintentos
+
+Implementado en apps:
+
+- Base: registro de nodos, generacion de beacon, procesamiento de stream y generacion de feedback ACK/NACK.
+- Nodo: aplicacion de beacon, gating por slot, ciclo de tx/retry/recovery.
 
 ## Estructura del repositorio
 
-- `docs/`: arquitectura, protocolo, pruebas, ADRs e investigacion.
-- `firmware/common/`: librerias compartidas (frames, CRC, ring buffer, sincronizacion).
-- `firmware/node/`: app del nodo remoto.
-- `firmware/base/`: app de basestation.
-- `tools/host-cli/`: utilidades de configuracion/captura desde PC.
-- `tools/rf-lab/`: utilidades de laboratorio RF.
-- `tests/unit/`: pruebas unitarias de componentes de protocolo.
-- `tests/sim/`: simulaciones funcionales de perdida/reintento.
-- `hardware/`: artefactos de hardware (BOM, notas, esquematicos).
+- docs/: arquitectura, protocolo, pruebas, ADR, roadmap.
+- firmware/common/: modulos compartidos de protocolo y MAC.
+- firmware/node/: logica de nodo.
+- firmware/base/: logica de base.
+- tests/unit/: pruebas unitarias.
+- tests/sim/: simulaciones funcionales.
+- tools/host-cli/: utilidades de parseo de tramas.
+- tools/rf-lab/: utilidades para pruebas RF en campo/lab.
+- arduino/ADQProtocol/: libreria educativa/prototipo.
 
-## Alcance de implementacion inicial
+## Build y pruebas
 
-Esta base incluye:
+Requisitos:
 
-- Documentacion tecnica v1.
-- Esqueleto de firmware portable en C.
-- CLI minima para parse de tramas en host.
-- Prueba unitaria inicial de CRC.
+- CMake >= 3.16
+- Compilador C99 (MSVC o GCC/Clang)
+- Python 3.8+ (solo para utilidades host)
 
-No incluye aun:
-
-- Driver RF especifico de chip.
-- Driver ADC especifico.
-- Integracion con RTOS.
-- Cifrado completo de payload.
-
-## Requisitos y validación del entorno
-
-La build del firmware usa únicamente fuentes C99 propios y CMake, por lo que solo necesitas:
-
-- `cmake` >= 3.16 (el `cmake_minimum_required` lo exige).
-- Un compilador C compatible (MSVC con el paquete "Desktop development with C++" de Visual Studio Build Tools, o `gcc`/`clang` desde MinGW/MSYS2).
-- Opcional: `python` 3.8+ si quieres ejecutar las utilidades de `tools/host-cli`.
-
-Antes de ejecutar la generación, abre una terminal preparada para el compilador que vayas a usar: por ejemplo un "Developer Command Prompt" de Visual Studio/Build Tools o un PowerShell/Bash donde `gcc` esté en el `PATH`.
-
-Comprueba que las herramientas están accesibles con:
-
-```powershell
-cmake --version
-cl /?
-# o, si usas MinGW:
-gcc --version
-python --version
-```
-
-Si algún comando falla, instala la herramienta correspondiente o corrige tu `PATH` antes de continuar.
-
-## Construcción y pruebas
-
-Una vez la herramienta de compilación esté disponible, genera los artefactos host con:
+Comandos:
 
 ```bash
 cmake -S . -B build
 cmake --build build
-```
-
-El target `ADQ_BUILD_TESTS` está habilitado por defecto (ON). Para ejecutar las pruebas unitarias del CRC usa:
-
-```bash
 ctest --test-dir build
 ```
 
-Para regenerar el build con una herramienta diferente (por ejemplo `ninja`), puedes pasar `-G Ninja` a `cmake -S . -B build`.
+## Roadmap inmediato
 
-## Utilidades auxiliares
+1. Cerrar backend RF real nRF52840 en HAL.
+2. Integrar flujo completo TX->ACK/NACK sobre backend real.
+3. Ejecutar validacion por etapas 10 m, 50 m, 100 m.
+4. Consolidar criterio de salida v1 con PER/latencia/recovery.
 
-El script `tools/host-cli/parse_frames.py` es una herramienta de Python 3 que solo usa la biblioteca estándar (`binascii`, `struct`, `sys`). Para parsear tramas desde tu PC ejecuta:
+## Documentacion recomendada
 
-```bash
-python tools/host-cli/parse_frames.py 010203...
-```
-
-Reemplaza `010203...` por la secuencia hexadecimal capturada. No necesitas dependencias adicionales.
-
-## Siguientes hitos
-
-1. Integrar HAL real de radio sub-GHz.
-2. Integrar front-end ADC strain gauge.
-3. Ejecutar pruebas RF de alcance (0.2, 1 y 2 km LOS).
-4. Ajustar protocolo v0.1 segun resultados de campo.
+1. docs/architecture/system-architecture-v1.md
+2. docs/protocol/protocol-v1.md
+3. docs/testing/test-plan-v1.md
+4. docs/implementation-roadmap-v1.md
+5. docs/adr/ADR-0001-radio-and-mac.md

@@ -1,28 +1,37 @@
 # ADR-0001: Radio y estrategia MAC para v1
 
 - Estado: Aceptado
-- Fecha: 2026-03-25
+- Fecha: 2026-03-26
 
 ## Contexto
 
-Se necesita una v1 funcional para pruebas de campo a 1-2 km LOS con nodos de strain gauge. La prioridad actual es tiempo de implementacion y robustez basica.
+Se abandono el camino anterior y se unifico la direccion tecnica del proyecto para una v1 ejecutable en corto plazo.
+
+Condiciones actuales:
+
+- hardware objetivo: nRF52840
+- banda: 2.4 GHz
+- alcance objetivo: 100 m LOS
+- foco: determinismo, confiabilidad y evidencia de campo
 
 ## Decision
 
-- Usar arquitectura de red estrella.
-- Diseñar protocolo con sincronizacion por beacon.
-- Usar esquema MAC TDMA simple con ACK/NACK.
-- Mantener buffer local y reintento para mejorar continuidad de datos.
+1. Mantener topologia estrella (nodos -> base).
+2. Implementar MAC propietario ESB-like con slots deterministas.
+3. Sincronizar nodos por beacon periodico.
+4. Usar ACK/NACK + timeout + reintentos acotados.
+5. Mantener fragmentacion/reensamble para desacoplar payload ADQ de payload RF.
 
 ## Justificacion
 
-- Reduce colisiones en red multi-nodo.
-- Hace predecible la ocupacion temporal del canal.
-- Permite telemetria clara de perdida/reintento.
-- Facilita evolucion a una version mas avanzada sin romper base.
+- Control total de comportamiento temporal para evitar colisiones.
+- Mejor trazabilidad de fallos por secuencia y razones NACK.
+- Implementacion portable en C con limites claros para validacion.
+- Coherencia con objetivo de 100 m sin sobre-ingenieria de largo alcance.
 
 ## Consecuencias
 
-- Requiere scheduler de slots en basestation.
-- Requiere control de tiempo razonable en nodo.
-- No cubre mesh/repetidores en v1.
+- La integracion RF real nRF52840 es el bloque tecnico prioritario.
+- Todas las pruebas de campo se centran en 10/50/100 m.
+- No se considera mesh ni otras topologias en v1.
+- Toda documentacion debe alinearse a esta decision.

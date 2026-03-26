@@ -1,15 +1,28 @@
 # Hardware Workspace
 
-Contenido esperado para v1:
+Este directorio se alinea al enfoque vigente de ADQ v1.
 
-- esquematico nodo remoto
-- esquematico basestation
-- BOM inicial
+## Baseline de hardware
+
+- SoC objetivo: nRF52840 para nodo y base.
+- Banda objetivo: 2.4 GHz.
+- Alcance de validacion v1: 100 m LOS.
+
+## Contenido esperado
+
+- esquematico de nodo
+- esquematico de base
+- BOM
 - notas de layout RF
 - checklist de bring-up
 
-## Recomendaciones iniciales
+## Recomendaciones de diseno
 
-- Mantener separacion analogico/RF/digital en PCB.
-- Exponer test points para UART/SWD/medicion de corriente.
-- Reservar conector para calibracion y pruebas del front-end strain gauge.
+- Separar rutas analogico/RF/digital.
+- Incluir test points para SWD/UART/consumo.
+- Reservar puntos para calibracion de front-end strain gauge.
+- Priorizar estabilidad de alimentacion y referencia de reloj.
+
+## Criterio de avance
+
+No pasar a validacion de campo sin checklist de bring-up completo y mediciones basicas de radio en banco.

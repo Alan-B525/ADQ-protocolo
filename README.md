@@ -2,6 +2,10 @@
 
 Sistema de adquisicion inalambrica para nodos remotos con sensores strain gauge y una basestation central.
 
+**👀 Project Status?** See [PROJECT_STATUS.md](PROJECT_STATUS.md) — **Single source of truth** for what's done, blockers, and what's next.
+
+**📊 Update Status:** At end of work day, run `/update-project-status` to automatically update the file.
+
 ## Objetivo de la v1
 
 Construir una primera version funcional inspirada en principios tipo LXRS:
